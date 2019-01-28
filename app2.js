@@ -7,7 +7,7 @@ class ToDo extends React.Component{
         this.handleClickItem = this.handleClickItem.bind(this);
         this.filter = this.filter.bind(this);
         this.state ={
-            defaultColor : '#00ff00',
+            defaultColor : '#000000',
             activeColor : '#ccc',
         }
         this.showFilter = false
