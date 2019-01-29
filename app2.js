@@ -2,35 +2,45 @@ class ToDo extends React.Component{
     constructor(props){
         super(props)
         this.toDoListItem =['hi'];
-        this.completedItem =[];
         this.handleInputValue = this.handleInputValue.bind(this);
         this.handleClickItem = this.handleClickItem.bind(this);
         this.filter = this.filter.bind(this);
         this.state ={
-            defaultColor : '#000000',
-            activeColor : '#ccc',
+            toDo : [{
+                text : 'Hi there',
+                completedItem : false
+            }] ,
+            showFilter : false
         }
-        this.showFilter = false
         
     }
     handleInputValue(e){
         e.preventDefault();
         let inputValue = e.target.inputValue.value;
-        console.log(inputValue)
+        let newItem = this.state.toDo.concat({ text: e.target.inputValue.value, completedItem: false })
         if (inputValue){
-            this.toDoListItem.push(e.target.inputValue.value);
+            this.setState({
+                toDo: newItem
+                })
             e.target.inputValue.value = ""
         }
-        RenderInt()
 
     }
     handleClickItem(e){
-        e.target.style.color = (this.state.activeColor);
-        this.completedItem.push(e.target.outerText);
-    }
+        const arrayOfItem = this.state.toDo;
+
+        arrayOfItem.map((item) => {
+            if (item.text == e.target.outerText){
+                item.completedItem = true;
+                console.log(item);
+                this.setState({
+                    toDo: arrayOfItem
+                })
+            }
+    })}
+
     filter(e){
-        this.showFilter ? this.showFilter = false : this.showFilter = true;
-        RenderInt()
+        this.state.showFilter ? this.setState({ showFilter: false }) : this.setState({ showFilter: true });
     }
     render(){
         return(
@@ -41,17 +51,26 @@ class ToDo extends React.Component{
                 </form>
 
                 <ol>
-                    {this.toDoListItem.map((item, key) => 
-                    <li style={{  color:  this.state.defaultColor }} 
-                     key={key} onClick={this.handleClickItem}>{item}</li>) }
+                    {this.state.showFilter ?
+                        this.state.toDo.map((item, key) =>{
+                            return item.completedItem ?
+                                <li style={{ color: '#ccc'}}
+                                    key={key}>{item.text}</li>
+                                    : ''
+                            
+                        })
+
+                                
+                    : this.state.toDo.map((item, key) =>
+                            <li style={item.completedItem ? { color: '#ccc' } : { color: '#000' }}
+                                key={key} onClick={this.handleClickItem}>{item.text}</li>)
+                    }
+
                 </ol>
-                <button onClick={this.filter}>{this.showFilter ? 'UnFilter' : 'Filter'}</button>
+                <button onClick={this.filter}>{this.state.showFilter ? 'UnFilter' : 'Filter'}</button>
             </div>
         )
     }
 }
-function RenderInt(){
+
     ReactDOM.render(<ToDo /> , document.getElementById('app'));
-}
-// setInterval(RenderInt,1000)
-RenderInt()
