@@ -25,16 +25,13 @@ class ToDo extends React.Component{
                 })
         }
     }
-    handleClickItem = (key) =>{
-        const arrayOfItem = this.state.toDo;
-        arrayOfItem.map((item,id) => {
-            if (id == key){
-                item.completedItem = !item.completedItem;
-            }
-            this.setState({
-                toDo: arrayOfItem
-            })
-    })}
+    handleClickItem = (id) =>{
+        const arrayOfItem = this.state.toDo.map((item,i) => (
+            i === id ? { ...item, completedItem:!item.completedItem} : item
+        ));
+        console.log(arrayOfItem)
+        this.setState({ toDo: arrayOfItem})
+        }
 
     filter = (type) =>{
         // this.state.showFilter ? this.setState({ showFilter: false }) : this.setState({ showFilter: true });    
@@ -67,68 +64,63 @@ class ToDo extends React.Component{
         }
 
     }
-    finalList = () =>{
-        
-        if(this.state.type.all){
-            console.log('hi')
-            const allList = this.state.toDo.map((item, key) =>{
-
-                return <li style={item.completedItem ? { color: '#ccc' } : { color: '#000' }}
-                    key={key} onClick={() => this.handleClickItem(key)}>
-                    {item.text}
-                </li>}
-                );
-                return allList
-            }
-        
-        if(this.state.type.completed){
-            
-            const completedList = this.state.toDo.map((item, key) => {
-                return item.completedItem ?
-                    <li style={item.completedItem ? { color: '#ccc' } : { color: '#000' }}
-                        key={key} onClick={() => this.handleClickItem(key)}>
-                        {item.text}
-                    </li>
-                    : ''
-            })               
-            return completedList
-            }
-        
-        if(this.state.type.active){
-            
-            const activeList = this.state.toDo.map((item, key) => {
-                return !item.completedItem ?
-                    <li style={item.completedItem ? { color: '#ccc' } : { color: '#000' }}
-                        key={key} onClick={() => this.handleClickItem(key)}>
-                        {item.text}
-                    </li>
-                    : ''
-            })
-            return activeList
-            }
-        }
-    
+  
     render(){
         
 
         return(
             <div>
                 <form onSubmit={this.handleInputValue}>
-                    <input type ="text" name="inputValue"
-                           value = {this.state.input}
-                           onChange ={this.handleChange} />
+                    <FormInput  name="inputValue" value = {this.state.input} onChange ={this.handleChange} />
                     <button>CLick To Add</button>
                 </form>
 
-                <ol>
-                    {this.finalList()}
-                </ol>
-                <button onClick={() => this.filter('all')}>All</button>
-                <button onClick={() => this.filter('completed')}>Completed</button>
-                <button onClick={() => this.filter('active')}>Active</button>
+                <ToDoList toDo={this.state.toDo} onClick={this.handleClickItem} type={this.state.type} />
+
+                <FilterButton type="All" onClick={()=>this.filter('all')} />
+                <FilterButton type="Completed" onClick={()=>this.filter('completed')} />
+                <FilterButton type="Active" onClick={()=>this.filter('active')} />
             </div>
         )
     }
 }
 
+
+class FormInput extends React.Component{
+    render(){
+        return(
+            <input type="text" name={this.props.name} value={this.props.value} onChange={this.props.onChange} />
+        )
+    }
+}
+
+class ToDoList extends React.Component{
+    render(){
+        const allList = this.props.toDo.map((item, key) => {
+            const style = item.completedItem ? { color: '#ccc' } : { color: '#000' };
+            const FinalLi = <li style={style} key={key} onClick={() => this.props.onClick(key)}>{item.text}</li>;
+
+            if(this.props.type.all){
+                return FinalLi
+            }
+            if(this.props.type.completed){
+                return item.completedItem ? FinalLi: ''
+            }
+            if(this.props.type.active){
+                return !item.completedItem ?FinalLi: ''
+            }
+        });
+        return(
+               <ol>{allList}</ol>
+
+        )
+    }
+}
+class FilterButton extends React.Component{
+    render(){
+        return(
+            <button onClick={this.props.onClick}>{this.props.type}</button>
+        )
+    }
+}
     ReactDOM.render(<ToDo /> , document.getElementById('app'));
